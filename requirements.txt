@@ -1,0 +1,8 @@
+# requirements
+numpy
+scipy
+matplotlib
+seaborn
+neurofinder
+scikit-image
+opencv-python
