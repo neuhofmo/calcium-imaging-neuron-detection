@@ -181,7 +181,7 @@ def is_not_round(neuron_max_x_y, coef=2):
 
 
 
-![1550755220053](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755220053.png)![1550755309256](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755309256.png)![1550755294710](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755294710.png)
+![Background gaussian filter](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755220053.png)![1550755309256](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755309256.png)![equalized background](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755294710.png)
 
 *Figure 1: Neurons identified using various methods. From left to right: Background produced using gaussian filter; Summed image after watershed; Summed image after watershed on equalized background.*
 
@@ -272,7 +272,7 @@ def correlate_neighbors(data):
 
 
 
-![1550755341087](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755341087.png)![1550755345481](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755345481.png)![1550755351036](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755351036.png)
+![Neuron values after smoothing](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755341087.png)![Pearson correlation](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755345481.png)![Adjacent/far neurons](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755351036.png)
 
 *Figure 4: Pixels value over time. From left to right: Unfiltered and filtered neuron, over time; Pearson correlation score for each pixel with its neighbors, summed over time; Correlation between pixels: noise vs. adjacent pixels.*
 
@@ -454,13 +454,13 @@ def run_and_plot_kmeans(data, last_K=16):
 
 
 
-![kmeans_6](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\kmeans_6.png)
+![kmeans_6](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/kmeans_6.png)
 
 *Figure 2: The results of K-means brightness segmentation. Shown are different Ks, each layer represented by the average brightness of the layer. As the value of K gets higher, the more the image resembles the original image.*
 
 
 
-![kmeans_layers](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\kmeans_layers.png)
+![kmeans_layers](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/kmeans_layers.png)
 
 *Figure 3: The results of K-means brightness segmentation. Shown are different layers produced by K-means. Each layer is between two thresholds, where the higher values of K represent the brighter values of the image.* 
 
@@ -499,7 +499,7 @@ def hitormiss_donut(img, rad_inner=5, width=2):
 
 
 
-![1550755415283](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755415283.png)![1550755419870](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755419870.png)
+![Hit and miss kernel](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755415283.png)![After Hit and Miss](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755419870.png)
 
 *Figure 5: Donut hit-or-miss convolution. From left to right: Donut shaped morphology filter; Hit-or-miss convolution applied to the summed, equalized FOV.*
 
@@ -692,10 +692,10 @@ Moreover, we can use various machine learning and deep learning algorithms to fi
 
 We were also requested to plot the fluorescence levels of each of the neurons. The whole process and code are available in the “Calcium Imaging - Plot Fluorescence” notebook, attached to this project files. Below is a plot of a selection of 60 neurons out of the neurons we detected (**Fig. 6**). In the next page, you may find the entire neurons detected (**Fig. 7**).
 
-![cell_fluor_all](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\cellfluorall.png)
+![cell_fluor_all](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/cellfluorall.png)
 
 *Figure 6: Fluorescence values of 60 of the neurons detected by our methods, after normalization and removal of artifacts.*
 
- ![cell_fluor_subset](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\cellfluorsome.png)
+ ![cell_fluor_subset](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/cellfluorsome.png)
 
 *Figure 7: Fluorescence values of all neurons detected by our methods, after normalization and removal of artifacts.*
