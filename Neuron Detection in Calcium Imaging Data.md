@@ -181,7 +181,7 @@ def is_not_round(neuron_max_x_y, coef=2):
 
 
 
-![Background gaussian filter](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755220053.png)![1550755309256](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755309256.png)![equalized background](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755294710.png)
+![Background gaussian filter](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755220053.png)    ![1550755309256](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755309256.png)    ![equalized background](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755294710.png)
 
 *Figure 1: Neurons identified using various methods. From left to right: Background produced using gaussian filter; Summed image after watershed; Summed image after watershed on equalized background.*
 
@@ -272,7 +272,7 @@ def correlate_neighbors(data):
 
 
 
-![Neuron values after smoothing](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755341087.png)![Pearson correlation](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755345481.png)![Adjacent/far neurons](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755351036.png)
+![Neuron values after smoothing](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755341087.png)     ![Pearson correlation](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755345481.png)        ![Adjacent/far neurons](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755351036.png)   
 
 *Figure 4: Pixels value over time. From left to right: Unfiltered and filtered neuron, over time; Pearson correlation score for each pixel with its neighbors, summed over time; Correlation between pixels: noise vs. adjacent pixels.*
 
@@ -499,7 +499,7 @@ def hitormiss_donut(img, rad_inner=5, width=2):
 
 
 
-![Hit and miss kernel](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755415283.png)![After Hit and Miss](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755419870.png)
+![Hit and miss kernel](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755415283.png)       ![After Hit and Miss](https://raw.githubusercontent.com/neuhofmo/calcium-imaging-neuron-detection/master/imgs_for_md/1550755419870.png)
 
 *Figure 5: Donut hit-or-miss convolution. From left to right: Donut shaped morphology filter; Hit-or-miss convolution applied to the summed, equalized FOV.*
 
