@@ -23,7 +23,7 @@ msk = summed > (0.25 * np.max(summed))
 
 ### Method #2 (Band pass filter): 
 
-To address the problem of the noisy background, we attempted to use the Fourier transform to filter our particularly high and low frequency data from the image (band pass filter). The goal of filtering high frequencies was to remove the high-frequency noise in the image; and the goal of filtering low frequencies was to remove the unequal background fluorescence, which appears to change in a consistent low frequency. After inverse-transforming the filtered image we once again created a mask from the image (see Table 1 for scores). This method has significantly increased our precision while not severely hurting the recall. However, the filter has left behind a ringing effect which interfered with neuron detection.
+To address the problem of the noisy background, we attempted to use the Fourier transform to filter our particularly high and low frequency data from the image (band pass filter). The goal of filtering high frequencies was to remove the high-frequency noise in the image; and the goal of filtering low frequencies was to remove the unequal background fluorescence, which appears to change in a consistent low frequency. After inverse-transforming the filtered image we once again created a mask from the image (see **Table 1** for scores). This method has significantly increased our precision while not severely hurting the recall. However, the filter has left behind a ringing effect which interfered with neuron detection.
 
 ```python
 def bandPassFilter(img, radIn=50, radOut=10000, plot=False):
@@ -65,7 +65,8 @@ msk = f_summed > (0.1 * np.max(f_summed))  # create mask from the filtered image
 | Band Pass filter, watershed, size selection                  | 0.1364 | 0.5056    | 0.2148   | 0.6983    | 0.7459    |
 | Smoothing, correlation, background eq., bandpass, watershed, size filter | 0.2758 | 0.474     | 0.3487   | 0.723     | 0.6528    |
 | Smoothing, correlation, background eq, band pass, k-means, watershed, size filter, hit or miss | 0.4121 | 0.3579    | 0.3831   | 0.6832    | 0.6227    |
-| Grid Search                                                  |        |           |          |           |           |
+| Grid Search – best recall score                              | 0.5545 | 0.2596    | 0.3536   | 0.6037    | 0.693     |
+| Grid Search – best combined score                            | 0.4182 | 0.4182    | 0.4182   | 0.685     | 0.6465    |
 
 *Table 1: Neurofinder scores for the different methods*
 
@@ -73,7 +74,7 @@ msk = f_summed > (0.1 * np.max(f_summed))  # create mask from the filtered image
 
 ### Method #3 (Watershed): 
 
-As our inclusion scores were rather low, we used the watershed algorithm to expand the size of the neurons detected. We used the Boolean masks produced by the various methods as seeds provided to the watershed algorithm. We then applied watershed to pipelines and increased our inclusion scores significantly (see Table 1).
+As our inclusion scores were rather low, we used the watershed algorithm to expand the size of the neurons detected. We used the Boolean masks produced by the various methods as seeds provided to the watershed algorithm. We then applied watershed to pipelines and increased our inclusion scores significantly (see **Table 1**).
 
 ```python
 def watershed(image,mask, filename, dims, dial_rad=9, max_neuron_size=21, min_neuron_size=4, coef=2):
@@ -118,7 +119,7 @@ def watershed(image,mask, filename, dims, dial_rad=9, max_neuron_size=21, min_ne
 
 ### Method #4 (Background equalization): 
 
-Using the previous methods, we were unable to remove the image's background. The image background turned out to be dark in certain areas, while bright in others, thus preventing us from detecting neurons with varying levels of activity. We hypothesized that if we divide each pixel by the relative brightness of its area, the image's brightness would become more uniform. Therefore, we created a highly blurred version of the summed FOV, by filtering it with a gaussian filter with a large kernel. We then divided the summed FOV by its blurred version and ended up with a similar image which has an equalized background brightness (see Fig. 2). We then used our previous pipeline (with watershed) to analyze this equalized image. Since this image's brightness was more uniform, thresholding was easier and more accurate. As the inclusion, exclusion and precision scores of this method increased, the recall score did not improve (see Table 1). While simple thresholding keeps a relatively higher recall score, it also results in a higher false positives rate (lower precision). 
+**Using** the previous methods, we were unable to remove the image's background. The image background turned out to be dark in certain areas, while bright in others, thus preventing us from detecting neurons with varying levels of activity. We hypothesized that if we divide each pixel by the relative brightness of its area, the image's brightness would become more uniform. Therefore, we created a highly blurred version of the summed FOV, by filtering it with a gaussian filter with a large kernel. We then divided the summed FOV by its blurred version and ended up with a similar image which has an equalized background brightness (see **Fig. 1**). We then used our previous pipeline (with watershed) to analyze this equalized image. Since this image's brightness was more uniform, thresholding was easier and more accurate. As the inclusion, exclusion and precision scores of this method increased, the recall score did not improve (see Table 1). While simple thresholding keeps a relatively higher recall score, it also results in a higher false positives rate (lower precision). 
 
 ```python
 background = ndimage.gaussian_filter(summed, sigma=15)
@@ -129,7 +130,7 @@ summed_eq = summed / background
 
 ### Method #5 (Size selection): 
 
-We then focused on the neuron morphology, which is resembles a round shape with a diameter of about 4 to 20 pixels. Given these morphological characteristics, we can iterate over the neuron-candidates we have identified and remove any neurons that appear to be too small (diameter under 4-5 pixels), too big (diameter over 19-24 pixels), or not round (the length/width ratio is higher than 2, or smaller than 0.5). When we applied this size selection, we observed that it allows us to use much more sensitive thresholding, so we can capture more true neurons, while not compromising our precision. In many cases this method allowed us to remove over two thirds of the neurons we detected, dramatically increasing our precision (see Table 1). 
+We then focused on the neuron morphology, which is resembles a round shape with a diameter of about 4 to 20 pixels. Given these morphological characteristics, we can iterate over the neuron-candidates we have identified and remove any neurons that appear to be too small (diameter under 4-5 pixels), too big (diameter over 19-24 pixels), or not round (the length/width ratio is higher than 2, or smaller than 0.5). When we applied this size selection, we observed that it allows us to use much more sensitive thresholding, so we can capture more true neurons, while not compromising our precision. In many cases this method allowed us to remove over two thirds of the neurons we detected, dramatically increasing our precision (see **Table 1**). 
 
 ```python
 def size_selection(labeled, max_neuron_size=21, min_neuron_size=4, coef=2, verbose=False):
@@ -266,6 +267,14 @@ def correlate_neighbors(data):
                 print(f"Progress: {counter}/{n} ({counter/(n) * 100:.2f}%)")
     return neighborCorrcoef
 ```
+
+
+
+
+
+![1550755341087](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755341087.png)![1550755345481](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755345481.png)![1550755351036](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755351036.png)
+
+*Figure 4: Pixels value over time. From left to right: Unfiltered and filtered neuron, over time; Pearson correlation score for each pixel with its neighbors, summed over time; Correlation between pixels: noise vs. adjacent pixels.*
 
 
 
@@ -453,15 +462,15 @@ def run_and_plot_kmeans(data, last_K=16):
 
 ![kmeans_layers](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\kmeans_layers.png)
 
-*Figure 3: The results of K-means brightness segmentation. Shown are different layers produced by Kmeans. Each layer is between two thresholds, where the higher values of K represent the brighter values of the image.* 
+*Figure 3: The results of K-means brightness segmentation. Shown are different layers produced by K-means. Each layer is between two thresholds, where the higher values of K represent the brighter values of the image.* 
 
 
 
 ### Method #9 (Hit or Miss): 
 
-Using the neighbor correlation data has allowed us to accurately detect the population of "active" neurons, or the neurons that spike more often during the video. However, we appear to be missing a second population of neurons, which doesn't fire often during the video, and is therefore harder to detect. When examining the ground truth data, we observed that some of the harder-to-detect neurons look like bright rings with a dark interior. We hypothesized that we could detect them by using a hit or miss-like operation, where we would convolve the image with a structuring element made up of a positive part and a negative part (“donut”, see Figure 3). And indeed, this convolution has produced an image in which the centers of "passive" neurons were marked by a bright center, allowing us to isolate them by thresholding. 
+Using the neighbor correlation data has allowed us to accurately detect the population of "active" neurons, or the neurons that spike more often during the video. However, we appear to be missing a second population of neurons, which doesn't fire often during the video, and is therefore harder to detect. When examining the ground truth data, we observed that some of the harder-to-detect neurons look like bright rings with a dark interior. We hypothesized that we could detect them by using a hit or miss-like operation, where we would convolve the image with a structuring element made up of a positive part and a negative part (“donut”, see **Fig. 4**). And indeed, this convolution has produced an image in which the centers of "passive" neurons were marked by a bright center, allowing us to isolate them by thresholding. 
 
-We then combined the seeds of those isolated neurons with the seeds we previously isolated from the neighbor correlation data, as well as a binary erosion, and applied watershed to the combined seeds. This pipeline improved our recall score to 0.4121 (see Table 1).
+We then combined the seeds of those isolated neurons with the seeds we previously isolated from the neighbor correlation data, as well as a binary erosion, and applied watershed to the combined seeds. This pipeline improved our recall score to 0.4121 (see **Table 1**).
 
 ```python
 def hitormiss_donut(img, rad_inner=5, width=2):
@@ -490,19 +499,182 @@ def hitormiss_donut(img, rad_inner=5, width=2):
 
 
 
-![1550755341087](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755341087.png)![1550755345481](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755345481.png)![1550755351036](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755351036.png)
-
-*Figure 4: Pixels value over time. From left to right: Unfiltered and filtered neuron, over time; Pearson correlation score for each pixel with its neighbors, summed over time; Correlation between pixels: noise vs. adjacent pixels.*
-
-
-
-### Method #10 (Grid search): 
-
-To optimize the parameters of the methods above, we implemented a grid search over the different parameters used in the pipeline, including brightness thresholds, size threshold, filter sizes and parameters, etc. The grid search code appears in the attached document, although we do not recommend running it (it might take a while).
-
 ![1550755415283](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755415283.png)![1550755419870](C:\Users\t-moneuh\AppData\Roaming\Typora\typora-user-images\1550755419870.png)
 
 *Figure 5: Donut hit-or-miss convolution. From left to right: Donut shaped morphology filter; Hit-or-miss convolution applied to the summed, equalized FOV.*
+
+### Method #10 (Grid search): 
+
+To optimize the parameters of the methods above, we implemented a grid search over the different parameters used in the pipeline, including brightness thresholds, size threshold, filter sizes and parameters, etc. The grid search code appears below, although we do not recommend running it (it might take a while). This method found parameters which yielded better results (**Table 1**).
+
+```python
+# Grid search on the following:
+# show(hitormiss_donut(new_summed))
+grid_search_res = []
+bool_img_disk_range1 = range(1,2)
+rad_inner_range = range(4,7)
+width_range = range(2,4)
+hms_max_size_range = range(8, 13)
+# thresholds
+hms_labeling_threshold_min_range = range(73, 76)
+hms_labeling_threshold_max_range = range(86, 91)
+bool_img_disk_range2 = range(1,2)
+
+max_size_range = range(21, 24)
+min_size_range = range(4, 7)
+dial_rad_range = range(6, 10)
+
+img_tuple = (corrcoef_norm_eq_no_frame, summed_eq)
+
+# combinations
+total_counts = count_combs([bool_img_disk_range1, rad_inner_range, width_range, hms_max_size_range, hms_labeling_threshold_min_range, hms_labeling_threshold_max_range, bool_img_disk_range2, max_size_range, min_size_range, dial_rad_range,img_tuple])
+print(f"Trying {total_counts} combinations")
+start_time = time.time()
+print(f"Started at {time.strftime('%H:%M:%S', time.gmtime(start_time))}")
+dict_for_bad_eval = {x: 0 for x in ('combined', 'inclusion', 'precision', 'recall', 'exclusion')}  # if eval fails
+
+# grid search
+counter = 0
+for bool_img_disk_size1 in bool_img_disk_range1:
+    bool_img = morphology.erosion(seg_no_frame, morphology.disk(bool_img_disk_size1)) > 0
+    # hit or miss
+    for rad_inner in rad_inner_range:  # positive radius
+        for width in width_range:  # negative radius
+            if rad_inner + width >= 12:  # bigger than the neuron radius
+                continue  # ignore
+            hms = norm_data(hitormiss_donut(summed_eq, rad_inner, width))
+            # show(draw_circles(hms, cont))
+            # hms_with_cont = draw_circles(hms, cont)
+            for min_threshold in hms_labeling_threshold_min_range:
+                min_threshold /= 100
+                for max_threshold in hms_labeling_threshold_max_range:
+                    max_threshold /= 100
+                    hms_labeled = ndimage.label(((min_threshold < hms) & (hms < max_threshold)))[0]  # between thresholds
+                    # show(hms_labeled)
+                    for hms_max_size in hms_max_size_range:
+                        hms_selected = size_selection(hms_labeled, hms_max_size, 0)  # selecting smaller neurons
+                        hms_selected_bool = hms_selected > 0
+                        for bool_img_disk_size2 in bool_img_disk_range2:
+                            bool_img2 = morphology.erosion(hms_selected_bool, morphology.disk(bool_img_disk_size2))
+                            comb_bool_img = bool_img | bool_img2
+                            for dial_rad in dial_rad_range:
+                                for max_neuron_size in max_size_range:
+                                    for min_neuron_size in min_size_range:
+                                        for i, img in enumerate(img_tuple):
+                                            json_fname = "grid_search_json"
+                                            size_selected_after_ws = watershed(img, comb_bool_img, json_fname, dims, dial_rad=dial_rad, max_neuron_size=max_neuron_size, min_neuron_size=min_neuron_size)
+                                            if size_selected_after_ws is None:  # if size selection didn't keep anything
+                                                d = {"bool_img_disk_size1": bool_img_disk_size1,
+                                                 "rad_inner": rad_inner,
+                                                 "width": width,
+                                                 "min_threshold": min_threshold,
+                                                 "max_threshold": max_threshold,
+                                                 "hms_max_size": hms_max_size,
+                                                 "bool_img_disk_size2": bool_img_disk_size2,
+                                                 "dial_rad": dial_rad,
+                                                 "max_neuron_size": max_neuron_size,
+                                                 "min_neuron_size": min_neuron_size,
+                                                 "img": i,
+                                                 "evaluation": dict_for_bad_eval
+                                                }
+                                            else:
+                                                # img_w_contours = draw_circles(corrcoef_norm_eq_no_frame, find_contours(size_selected_after_ws))
+                                                # show(img_w_contours)
+                                                evaluation_res = evaluation(json_fname)
+                                                
+                                                d = {"bool_img_disk_size1": bool_img_disk_size1,
+                                                     "rad_inner": rad_inner,
+                                                     "width": width,
+                                                     "min_threshold": min_threshold,
+                                                     "max_threshold": max_threshold,
+                                                     "hms_max_size": hms_max_size,
+                                                     "bool_img_disk_size2": bool_img_disk_size2,
+                                                     "dial_rad": dial_rad,
+                                                     "max_neuron_size": max_neuron_size,
+                                                     "min_neuron_size": min_neuron_size,
+                                                     "img": i,
+                                                     "evaluation": evaluation_res
+                                                    }
+                                            grid_search_res.append(d)
+                                            os.remove(fix_json_fname(json_fname))
+                                            # counter
+                                            counter += 1
+                                            if counter % 100 == 0:
+                                                elapsed_time = time.time() - start_time                                                
+                                                print(f"Progress: {counter}/{total_counts} ({counter/total_counts * 100:.2f}%). Elapsed: {time.strftime('%H:%M:%S', elapsed_time)}")
+                                            # once in 100:
+                                            if counter % 1000 == 0:
+                                                # with open('res_last.pickle', 'wb') as f:  # used to be
+                                                with open('res_last_2.pickle', 'wb') as f:
+                                                    # Pickle the 'data' dictionary using the highest protocol available.
+                                                    pickle.dump(grid_search_res, f, pickle.HIGHEST_PROTOCOL)
+                                                    print("Results pickled")
+
+print(f"Finished at {time.strftime('%H:%M:%S', time.gmtime(start_time))}")
+with open('res_last_2.pickle', 'wb') as f:
+    # Pickle the 'data' dictionary using the highest protocol available.
+    pickle.dump(grid_search_res, f, pickle.HIGHEST_PROTOCOL)
+    print("Results pickled")
+
+# print results:
+print("Index for each category:")
+for k in grid_search_res[0]['evaluation'].keys():
+    print(f"Best {k} score:")
+    ind = np.argmax([x['evaluation'][k] for x in (x for x in grid_search_res)])
+    print(f"Index: {ind}")
+    print(f"Evaluation scores:")
+    print(grid_search_res[ind]['evaluation'])
+    print("Values:")
+    print(grid_search_res[ind])
+    print("*************")
+    
+# running the pipeline with the best recall and combined scores:
+def pipeline_with_params(params_dict, fname, img_tuple = (corrcoef_norm_eq_no_frame, summed_eq)):
+    """Run pipelines with params_dict (produced by the grid search).
+    Save final figures and return evalution score."""
+    # unpacking parameters
+    bool_img_disk_size1 = params_dict['bool_img_disk_size1']
+    rad_inner = params_dict['rad_inner']
+    width = params_dict['width']
+    min_threshold = params_dict['min_threshold']
+    max_threshold = params_dict['max_threshold']
+    hms_max_size = params_dict['hms_max_size']
+    bool_img_disk_size2 = params_dict['bool_img_disk_size2']
+    dial_rad = params_dict['dial_rad']
+    max_neuron_size = params_dict['max_neuron_size']
+    min_neuron_size = params_dict['min_neuron_size']
+    img = img_tuple[params_dict['img']]
+    # results
+    bool_img = morphology.erosion(seg_no_frame, morphology.disk(bool_img_disk_size1)) > 0
+    hms = norm_data(hitormiss_donut(summed_eq, rad_inner, width))
+    hms_labeled = ndimage.label(((min_threshold < hms) & (hms < max_threshold)))[0]  # between thresholds
+    hms_selected = size_selection(hms_labeled, hms_max_size, 0)  # selecting smaller neurons
+    hms_selected_bool = hms_selected > 0
+    bool_img2 = morphology.erosion(hms_selected_bool, morphology.disk(bool_img_disk_size2))
+    comb_bool_img = bool_img | bool_img2
+    # json_fname = "grid_search_json"
+    size_selected_after_ws = watershed(img, comb_bool_img, fname, dims, dial_rad=dial_rad, max_neuron_size=max_neuron_size, min_neuron_size=min_neuron_size)
+    evaluation_res = evaluation(fname)
+    print(evaluation_res)
+    img_w_contours = draw_circles(corrcoef_norm_eq_no_frame, find_contours(size_selected_after_ws))
+    show(img_w_contours)
+    im = Image.fromarray(img_w_contours)
+    im.save(fname+'_corrcoef.jpg')
+    img_w_contours = draw_circles(summed, find_contours(size_selected_after_ws))
+    show(img_w_contours)
+    im = Image.fromarray(img_w_contours)
+    im.save(fname+'_summed.jpg')
+
+# best recall:
+ind = 12895
+best_recall_dict = grid_search_res[ind]
+pipeline_with_params(best_recall_dict, 'best_recall')
+
+# best combined:
+ind = 14404
+best_combined_dict = grid_search_res[ind]
+pipeline_with_params(best_recall_dict, 'best_combined')
+```
 
 
 
@@ -516,19 +688,14 @@ Moreover, we can use various machine learning and deep learning algorithms to fi
 
  
 
-
- 
-
- 
-
 ## Appendix A: Neuron Fluorescence Values
 
-We were also requested to plot the fluorescence levels of each of the neurons. The whole process and code are available in the “Calcium Imaging - Plot Fluorescence” notebook, attached to this project files. Below is a plot of a selection of 60 neurons out of the neurons we detected (Fig. 4). In the next page, you may find the entire neurons detected (Fig. 5).
+We were also requested to plot the fluorescence levels of each of the neurons. The whole process and code are available in the “Calcium Imaging - Plot Fluorescence” notebook, attached to this project files. Below is a plot of a selection of 60 neurons out of the neurons we detected (**Fig. 6**). In the next page, you may find the entire neurons detected (**Fig. 7**).
 
-![cell_fluor_all](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\cell_fluor_all.png)
+![cell_fluor_all](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\cellfluorall.png)
 
 *Figure 6: Fluorescence values of 60 of the neurons detected by our methods, after normalization and removal of artifacts.*
 
- ![cell_fluor_subset](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\cell_fluor_subset.png)
+ ![cell_fluor_subset](C:\Users\t-moneuh\OneDrive - Microsoft\Moran_personal\Signal_Analysis_Course\Biological_Signal_Analysis_2018\CalciumSegmentation\imgs_for_paper\cellfluorsome.png)
 
 *Figure 7: Fluorescence values of all neurons detected by our methods, after normalization and removal of artifacts.*
