@@ -72,15 +72,15 @@ bool_img = morphology.erosion(seg_no_frame, morphology.disk(1)) > 0
 print("Running Hit or Miss (donut!)")
 hms = norm_data(hitormiss_donut(summed_eq))
 show(draw_circles(norm_data(hitormiss_donut(summed_eq)),cont))
-hms_labeled = ndimage.label((hms>0.75)&(hms<0.89))[0]
-hms_selected = size_selection(hms_labeled, 10, 0)
+hms_labeled = ndimage.label((hms>0.75)&(hms<0.86))[0]
+hms_selected = size_selection(hms_labeled, 8, 0)
 
 print("Combining seeds and running watershed...")
 # combine seeds of two methods
 comb_bool_img = bool_img | morphology.erosion((hms_selected > 0),morphology.disk(1))
 
 # size selection, watershed
-size_selected_after_ws = watershed(corrcoef_norm_eq_no_frame , comb_bool_img, 'neuron_detection_final', dims, dial_rad=8, max_neuron_size=21, min_neuron_size=5)
+size_selected_after_ws = watershed(corrcoef_norm_eq_no_frame , comb_bool_img, 'neuron_detection_final', dims, dial_rad=6, max_neuron_size=21, min_neuron_size=6)
 img_w_contours = draw_circles(corrcoef_norm_eq_no_frame, find_contours(size_selected_after_ws))
 show(img_w_contours)
 print("Neurofinder results:")
